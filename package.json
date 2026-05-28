@@ -1,0 +1,44 @@
+{
+  "name": "jimeng-ai-video-cli-workflow",
+  "version": "1.0.0",
+  "description": "即梦 AI 视频 CLI 工作流桌面应用：LLM 分镜、图片审核、图生视频、多账号积分调度与剪辑导出",
+  "main": "electron/main.js",
+  "scripts": {
+    "dev": "concurrently \"vite\" \"wait-on http://localhost:5173 && electron .\"",
+    "dev:vite": "vite",
+    "dev:electron": "electron .",
+    "build": "vite build && electron-builder",
+    "build:web": "vite build",
+    "pack:mac": "vite build && electron-builder --mac",
+    "pack:win": "vite build && electron-builder --win",
+    "preview": "vite preview"
+  },
+  "keywords": ["jimeng", "dreamina", "ai-video", "workflow", "electron", "cli-router", "storyboard"],
+  "author": "huihui",
+  "license": "MIT",
+  "devDependencies": {
+    "concurrently": "^8.2.2",
+    "electron": "^31.0.0",
+    "electron-builder": "^24.13.3",
+    "vite": "^5.3.1",
+    "vite-plugin-electron": "^0.28.7",
+    "wait-on": "^7.2.0"
+  },
+  "dependencies": {
+    "electron-store": "^8.2.0",
+    "openai": "^4.52.7"
+  },
+  "build": {
+    "appId": "com.jimeng.ai-video-cli-workflow",
+    "productName": "即梦AI视频CLI工作流",
+    "directories": {
+      "output": "dist-electron"
+    },
+    "mac": {
+      "target": "dmg"
+    },
+    "win": {
+      "target": "nsis"
+    }
+  }
+}

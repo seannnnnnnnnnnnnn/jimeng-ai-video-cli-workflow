@@ -1,0 +1,748 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="即梦 AI 工作流 Studio - 自动化分镜生成、图片生成、视频生成" />
+  <title>即梦工作流 Studio</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./styles/index.css" />
+  <link rel="stylesheet" href="./styles/editor.css" />
+</head>
+<body>
+  <div id="app">
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-logo">
+        <div class="logo-icon">✦</div>
+        <span class="logo-text">即梦 Studio</span>
+      </div>
+
+      <nav class="sidebar-nav">
+        <button class="nav-item active" data-tab="workflow" id="nav-workflow">
+          <span class="nav-icon">⚡</span>
+          <span>工作流</span>
+        </button>
+        <button class="nav-item" data-tab="director" id="nav-director">
+          <span class="nav-icon">🎬</span>
+          <span>导演模式</span>
+        </button>
+        <button class="nav-item" data-tab="agent" id="nav-agent">
+          <span class="nav-icon">🤖</span>
+          <span>Agent 对话</span>
+        </button>
+        <button class="nav-item" data-tab="editor" id="nav-editor">
+          <span class="nav-icon">✂️</span>
+          <span>剪辑</span>
+        </button>
+        <button class="nav-item" data-tab="gallery" id="nav-gallery">
+          <span class="nav-icon">📁</span>
+          <span>项目库</span>
+        </button>
+        <button class="nav-item" data-tab="settings" id="nav-settings">
+          <span class="nav-icon">⚙️</span>
+          <span>设置</span>
+        </button>
+      </nav>
+
+      <div class="sidebar-footer">
+        <div class="credit-badge" id="credit-badge">
+          <span class="credit-icon">💎</span>
+          <span id="credit-text">查询积分</span>
+        </div>
+
+        <!-- Multi-Account Router Selector -->
+        <div class="account-selector-row" id="account-selector-row">
+          <div class="account-select-container">
+            <select id="account-select" class="account-select">
+              <option value="">载入账号中...</option>
+            </select>
+          </div>
+          <button class="account-manage-btn" id="account-manage-btn" title="管理所有即梦账号">👥</button>
+        </div>
+
+        <div class="login-status-row" id="login-status-row">
+          <div class="cli-status" id="cli-status">
+            <span class="status-dot" id="status-dot"></span>
+            <span id="status-text">检测 CLI...</span>
+          </div>
+          <button class="login-btn" id="login-btn" style="display:none">🔑 登录即梦</button>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+
+      <!-- ── Workflow Tab ── -->
+      <div class="tab-pane active" id="tab-workflow">
+        <div class="page-header workflow-page-header">
+          <div>
+            <h1>自动化工作流</h1>
+            <p class="page-subtitle">一键生成完整的 AI 视频分镜：故事 → 分镜脚本 → 图片 → 视频</p>
+          </div>
+          <div class="workflow-header-actions">
+            <input type="text" id="project-name-input" class="project-name-input" placeholder="项目名称（可选）" />
+            <button class="outline-btn" id="new-project-header-btn">＋ 新项目</button>
+          </div>
+        </div>
+
+        <div class="workflow-layout">
+          <!-- Input Panel -->
+          <div class="input-panel glass-card">
+            <div class="panel-title">
+              <span class="panel-icon">✍️</span> 故事/主题输入
+            </div>
+            <textarea
+              id="story-prompt"
+              class="story-textarea"
+              placeholder="描述您的故事或主题...&#10;&#10;例如：一个宇航员在外星球发现了古代文明遗迹，探索其中的秘密，最终意外触发了某种神秘装置..."
+              rows="5"
+            ></textarea>
+
+            <div class="settings-row">
+              <label class="settings-label">分镜数量</label>
+              <div class="scene-count-btns" id="scene-count-btns">
+                <button class="count-btn" data-count="3">3</button>
+                <button class="count-btn active" data-count="4">4</button>
+                <button class="count-btn" data-count="5">5</button>
+                <button class="count-btn" data-count="6">6</button>
+              </div>
+            </div>
+
+            <!-- ▼ 可折叠生成参数面板 -->
+            <div class="params-toggle" id="params-toggle">
+              <span class="params-toggle-icon" id="params-toggle-icon">▶</span>
+              <span>生成参数</span>
+              <span class="params-summary" id="params-summary"></span>
+            </div>
+            <div class="params-panel" id="params-panel" style="display:none">
+              <div class="params-grid">
+                <div class="param-group">
+                  <label class="param-label">图片比例</label>
+                  <select id="p-image-ratio" class="param-select">
+                    <option value="16:9">16:9 横屏</option>
+                    <option value="9:16">9:16 竖屏</option>
+                    <option value="1:1">1:1 正方</option>
+                    <option value="4:3">4:3</option>
+                  </select>
+                </div>
+                <div class="param-group">
+                  <label class="param-label">图片分辨率</label>
+                  <select id="p-image-resolution" class="param-select">
+                    <option value="2k">2K（推荐）</option>
+                    <option value="4k">4K</option>
+                    <option value="1k">1K</option>
+                  </select>
+                </div>
+                <div class="param-group">
+                  <label class="param-label">视频模型</label>
+                  <select id="p-video-model" class="param-select">
+                    <option value="seedance2.0_vip">Seedance 2.0 VIP</option>
+                    <option value="seedance2.0">Seedance 2.0</option>
+                    <option value="seedance2.0fast_vip">Seedance 2.0 Fast VIP</option>
+                    <option value="seedance2.0fast">Seedance 2.0 Fast</option>
+                  </select>
+                </div>
+                <div class="param-group">
+                  <label class="param-label">视频时长（秒）</label>
+                  <input type="number" id="p-video-duration" class="param-select" min="3" max="15" value="5" />
+                </div>
+                <div class="param-group">
+                  <label class="param-label">视频分辨率</label>
+                  <select id="p-video-resolution" class="param-select">
+                    <option value="1080p">1080p（VIP）</option>
+                    <option value="720p">720p</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+            <!-- /params panel -->
+
+            <div class="settings-row">
+              <label class="settings-label">输出目录</label>
+              <div class="path-input-row">
+                <input type="text" id="output-dir-input" class="path-input" placeholder="默认：文稿/JimengOutput/..." readonly />
+                <button class="icon-btn" id="choose-output-dir" title="选择目录">📁</button>
+              </div>
+            </div>
+
+            <div style="display:flex;gap:10px;margin-top:16px;">
+              <button class="start-btn" id="start-workflow-btn" style="flex:1">
+                <span class="btn-icon">▶</span>
+                <span id="start-btn-text">开始生成工作流</span>
+              </button>
+              <button class="outline-btn danger" id="pause-workflow-btn" style="display:none;width:80px;color:var(--red);border-color:rgba(255,59,48,0.3)">
+                ⏸️ 暂停
+              </button>
+            </div>
+          </div>
+
+          <!-- Progress Panel -->
+          <div class="progress-panel">
+            <!-- Phase Indicators -->
+            <div class="phase-indicators" id="phase-indicators">
+              <div class="phase-item" id="phase-llm">
+                <div class="phase-dot"></div>
+                <div class="phase-info">
+                  <div class="phase-name">分镜脚本</div>
+                  <div class="phase-status">等待中</div>
+                </div>
+              </div>
+              <div class="phase-line"></div>
+              <div class="phase-item" id="phase-image">
+                <div class="phase-dot"></div>
+                <div class="phase-info">
+                  <div class="phase-name">图片生成</div>
+                  <div class="phase-status">等待中</div>
+                </div>
+              </div>
+              <div class="phase-line"></div>
+              <div class="phase-item" id="phase-video">
+                <div class="phase-dot"></div>
+                <div class="phase-info">
+                  <div class="phase-name">视频生成</div>
+                  <div class="phase-status">等待中</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Action to continue to videos -->
+            <div id="continue-video-banner" class="glass-card" style="display:none;margin-bottom:16px;background:rgba(10,132,255,0.1);border-color:var(--accent);text-align:center;padding:16px;">
+              <div style="margin-bottom:6px;font-weight:600;font-size:15px;color:var(--accent);">图片审核模块</div>
+              <div style="margin-bottom:12px;font-size:12.5px;color:var(--text-secondary);">可直接查看大图、编辑每个分镜的图片提示词并重新生成；确认后再进入视频生成。</div>
+              <button class="start-btn" id="continue-video-btn" style="padding:10px 24px;font-size:14px;margin:0 auto;">▶ 确认图片，开始生成视频</button>
+            </div>
+
+            <!-- Log Console -->
+            <div class="log-console glass-card" id="log-console">
+              <div class="log-header">
+                <span>运行日志</span>
+                <button class="clear-log-btn" id="clear-log">清除</button>
+              </div>
+              <div class="log-body" id="log-body">
+                <div class="log-placeholder">日志将在这里实时显示...</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Scene Cards Grid -->
+        <div class="scenes-section" id="scenes-section" style="display:none">
+          <div class="section-header">
+            <h2 id="storyboard-title">分镜预览</h2>
+            <div style="display:flex;gap:10px">
+              <button class="outline-btn" id="open-director-btn" style="display:none">
+                🎬 进入导演模式
+              </button>
+              <button class="outline-btn" id="import-to-editor-btn" style="display:none">
+                📥 导入到剪辑
+              </button>
+              <button class="outline-btn" id="open-output-folder">
+                <span>📂</span> 打开输出目录
+              </button>
+            </div>
+          </div>
+          <div class="scenes-grid" id="scenes-grid"></div>
+        </div>
+
+        <!-- Lightbox Modal for Scene Card Large Image Preview -->
+        <div id="lightbox-modal" class="lightbox-modal" style="display:none">
+          <div class="lightbox-backdrop"></div>
+          <div class="lightbox-content">
+            <img id="lightbox-img" alt="Lightbox Preview" />
+            <button class="lightbox-close">✕</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── Agent Tab ── -->
+      <div class="tab-pane" id="tab-agent">
+        <div class="page-header">
+          <h1>Agent 对话</h1>
+          <p class="page-subtitle">与 AI Agent 对话，描述想法，Agent 将帮您规划并执行工作流</p>
+        </div>
+
+        <div class="chat-layout">
+          <div class="chat-messages" id="chat-messages">
+            <div class="chat-message assistant">
+              <div class="msg-avatar">✦</div>
+              <div class="msg-bubble">
+                <p>你好！我是即梦工作流 Agent 🎬</p>
+                <p>你可以告诉我你想创作的故事或视频主题，我会帮你：</p>
+                <ul>
+                  <li>生成专业的分镜脚本</li>
+                  <li>调用即梦 CLI 生成每个分镜的图片</li>
+                  <li>基于图片生成对应的视频分镜</li>
+                </ul>
+                <p>试试说：<em>"帮我创作一个关于赛博朋克城市夜晚的短视频分镜"</em></p>
+              </div>
+            </div>
+          </div>
+
+          <div class="chat-input-area">
+            <div class="chat-input-wrapper glass-card">
+              <textarea
+                id="chat-input"
+                class="chat-input"
+                placeholder="描述你的创意..."
+                rows="2"
+              ></textarea>
+              <div class="chat-actions">
+                <label class="auto-run-toggle">
+                  <input type="checkbox" id="auto-run-toggle" checked />
+                  <span>自动执行工作流</span>
+                </label>
+                <button class="send-btn" id="send-chat-btn">
+                  <span>发送</span>
+                  <span class="send-icon">→</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── Director Tab ── -->
+      <div class="tab-pane" id="tab-director">
+        <div class="page-header" style="display:flex;align-items:center;justify-content:space-between">
+          <div>
+            <h1>🎬 导演模式</h1>
+            <p class="page-subtitle" id="director-subtitle">选择一个项目开始二次调整</p>
+          </div>
+          <div style="display:flex;gap:10px;align-items:center">
+            <span class="director-project-badge" id="director-project-badge" style="display:none"></span>
+            <button class="outline-btn" id="director-import-to-editor-btn" style="display:none">📥 导入到剪辑</button>
+            <button class="outline-btn" id="director-pick-project">切换项目</button>
+          </div>
+        </div>
+
+        <!-- Project picker (shown when no project loaded) -->
+        <div id="director-no-project" class="director-empty">
+          <div class="empty-icon">🎬</div>
+          <p>请先从项目库选择一个项目，或完成一次工作流</p>
+          <button class="start-btn" id="director-goto-gallery" style="margin-top:16px;padding:10px 20px;font-size:13px">
+            前往项目库选择
+          </button>
+        </div>
+
+        <!-- Director scene list -->
+        <div id="director-scenes" style="display:none">
+          <!-- Director log console -->
+          <div class="log-console glass-card" id="director-log" style="margin-bottom:20px;height:120px">
+            <div class="log-header">
+              <span>导演操作日志</span>
+              <button class="clear-log-btn" id="clear-director-log">清除</button>
+            </div>
+            <div class="log-body" id="director-log-body">
+              <div class="log-placeholder">操作日志将在这里显示...</div>
+            </div>
+          </div>
+
+          <div id="director-scene-list"></div>
+        </div>
+      </div>
+
+
+      <!-- ── Editor Tab ── -->
+      <div class="tab-pane" id="tab-editor">
+        <!-- Editor page header -->
+        <div class="editor-page-header">
+          <div>
+            <h1>✂️ 视频剪辑</h1>
+            <p class="page-subtitle">拖拽素材到时间线，添加转场效果，一键导出</p>
+          </div>
+          <div style="display:flex;align-items:center;gap:8px">
+            <select id="editor-project-select" style="background:rgba(0,0,0,0.3);border:1px solid var(--border);border-radius:6px;color:var(--text-secondary);padding:6px 10px;font-size:12.5px;font-family:inherit;max-width:220px">
+              <option value="">— 选择剪辑项目 —</option>
+            </select>
+            <button class="outline-btn" id="editor-new-project-btn" title="新建空白剪辑项目">＋ 新建</button>
+            <button class="outline-btn" id="editor-save-project-btn" title="保存当前剪辑项目" style="display:none">💾 保存</button>
+            <span id="editor-save-indicator" style="font-size:11px;color:var(--text-muted);display:none">已保存</span>
+          </div>
+          <button class="start-btn" id="editor-export-open-btn" style="padding:9px 18px;font-size:13px">
+            📤 导出视频
+          </button>
+        </div>
+
+        <div class="editor-layout" id="editor-layout">
+          <!-- Top: Preview + vertical-resizer + Media Bin -->
+          <div class="editor-top" id="editor-top">
+            <!-- Preview Player -->
+            <div class="editor-preview-panel" id="editor-preview-panel">
+              <div class="editor-preview-wrap" id="editor-preview-wrap">
+                <div class="preview-placeholder" id="editor-placeholder">
+                  <div class="placeholder-icon">🎬</div>
+                  <div>从素材区点击预览，或拖入时间线</div>
+                </div>
+                <video id="editor-video" style="display:none" preload="metadata"></video>
+                <div class="preview-inout-bar" id="preview-inout-bar" style="display:none">
+                  <div class="inout-range" id="inout-range"></div>
+                </div>
+              </div>
+              <!-- Transport -->
+              <div class="editor-transport">
+                <span class="transport-timecode" id="transport-timecode">00:00:00.000</span>
+                <div class="transport-sep"></div>
+                <button class="transport-btn" id="tp-prev" title="上一帧">⏮</button>
+                <button class="transport-btn" id="tp-play" title="播放/暂停">▶</button>
+                <button class="transport-btn" id="tp-next" title="下一帧">⏭</button>
+                <div class="transport-sep"></div>
+                <button class="transport-btn" id="tp-inpoint" title="设置入点 [I]">⬅ 入点</button>
+                <span class="inout-label" id="in-label">--:--</span>
+                <button class="transport-btn" id="tp-outpoint" title="设置出点 [O]">出点 ➡</button>
+                <span class="inout-label" id="out-label">--:--</span>
+                <div class="transport-sep"></div>
+                <button class="transport-btn" id="tp-apply-inout" title="应用入出点到选中片段">✂ 应用</button>
+                <button class="transport-btn" id="tp-clear-inout" title="清除入出点">✕ 清除</button>
+              </div>
+            </div>
+
+            <!-- ✦ Vertical Resizer (preview ↔ bin) -->
+            <div class="editor-resizer editor-resizer-v" id="resizer-v" title="拖动调整预览/素材区宽度"></div>
+
+            <!-- Media Bin -->
+            <div class="editor-bin" id="editor-bin">
+              <div class="bin-header">
+                <span class="bin-header-title">📂 素材区</span>
+                <button class="bin-import-btn" id="editor-import-btn">＋ 导入素材</button>
+              </div>
+              <div class="bin-list" id="bin-list">
+                <div class="bin-empty" id="bin-empty">
+                  <div style="font-size:28px">📂</div>
+                  <div>点击「导入素材」添加视频或图片</div>
+                </div>
+              </div>
+              <div class="bin-footer">
+                <span>默认转场</span>
+                <select id="default-transition-type">
+                  <option value="none">无转场</option>
+                  <option value="fade">淡入淡出</option>
+                  <option value="fadeblack">黑场溶解</option>
+                  <option value="dissolve">交叉溶解</option>
+                  <option value="wipeleft">向左擦除</option>
+                  <option value="wiperight">向右擦除</option>
+                </select>
+                <span>时长</span>
+                <input type="number" id="default-transition-dur" value="0.5" min="0.1" max="3" step="0.1" />
+                <span>s</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- ✦ Horizontal Resizer (top-row ↔ timeline) -->
+          <div class="editor-resizer editor-resizer-h" id="resizer-h" title="拖动调整预览/时间线高度"></div>
+
+          <!-- Timeline Panel -->
+          <div class="editor-timeline-panel" id="editor-timeline-panel">
+            <!-- Toolbar -->
+            <div class="timeline-toolbar">
+              <button class="tl-btn active" id="tl-snap-btn" title="磁吸对齐">🧲 磁吸</button>
+              <button class="tl-btn" id="tl-cut-btn" title="在播放头处剪切">✂ 剪切</button>
+              <button class="tl-btn danger" id="tl-delete-btn" title="删除选中片段">⌫ 删除</button>
+              <div class="tl-sep"></div>
+              <button class="tl-btn" id="tl-clear-btn" title="清空时间线">🗑 清空</button>
+              <div class="tl-spacer"></div>
+              <div class="tl-zoom">
+                <button id="tl-zoom-out">−</button>
+                <span id="tl-zoom-label">80px/s</span>
+                <button id="tl-zoom-in">＋</button>
+              </div>
+            </div>
+            <!-- Scrollable timeline -->
+            <div class="timeline-scroll" id="timeline-scroll">
+              <div class="timeline-ruler" id="timeline-ruler"></div>
+              <div class="timeline-track-area" id="timeline-track-area">
+                <div class="timeline-track" id="timeline-track">
+                  <div class="timeline-playhead" id="timeline-playhead" style="left:0"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+
+        <!-- Export Modal -->
+        <div class="export-modal-overlay" id="export-modal" style="display:none">
+          <div class="export-modal">
+            <h2>📤 导出视频</h2>
+            <div class="export-row">
+              <label>分辨率</label>
+              <select id="export-resolution">
+                <option value="720p">720p (1280×720)</option>
+                <option value="1080p">1080p (1920×1080)</option>
+              </select>
+            </div>
+            <div class="export-row">
+              <label>导出路径</label>
+              <div class="export-path-row">
+                <input type="text" id="export-path-input" placeholder="点击选择保存路径..." readonly />
+                <button id="export-choose-path-btn">📂</button>
+              </div>
+            </div>
+            <div class="export-progress-bar" id="export-progress-bar" style="display:none">
+              <div class="export-progress-fill" id="export-progress-fill"></div>
+            </div>
+            <div class="export-progress-label" id="export-progress-label"></div>
+            <div class="export-actions">
+              <button class="export-cancel-btn" id="export-cancel-btn">取消</button>
+              <button class="export-start-btn" id="export-start-btn">开始导出</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="tab-pane" id="tab-gallery">
+
+        <div class="page-header" style="display:flex;align-items:center;justify-content:space-between">
+          <div>
+            <h1>项目库</h1>
+            <p class="page-subtitle">管理所有已生成的 AI 视频分镜项目</p>
+          </div>
+          <div style="display:flex;gap:10px">
+            <button class="outline-btn" id="import-project-btn">📥 导入项目</button>
+            <button class="start-btn" id="new-project-btn" style="padding:10px 18px;font-size:13px">
+              <span>＋ 新建项目</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Project list -->
+        <div id="projects-grid" class="projects-grid">
+          <div class="gallery-empty" id="projects-empty">
+            <div class="empty-icon">📁</div>
+            <p>还没有项目</p>
+            <p class="empty-sub">完成一次工作流后，项目会自动保存在这里</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── Settings Tab ── -->
+      <div class="tab-pane" id="tab-settings">
+        <div class="page-header">
+          <h1>设置</h1>
+          <p class="page-subtitle">配置 LLM API 和即梦 CLI 参数</p>
+        </div>
+
+        <div class="settings-layout">
+
+          <!-- LLM Settings -->
+          <div class="settings-card glass-card">
+            <div class="settings-card-header">
+              <span class="settings-card-icon">🧠</span>
+              <div>
+                <div class="settings-card-title">LLM 接口配置</div>
+                <div class="settings-card-sub">用于生成分镜脚本（支持任意 OpenAI 兼容接口）</div>
+              </div>
+              <button class="test-btn" id="test-llm-btn">测试连接</button>
+            </div>
+
+            <div class="form-grid">
+              <div class="form-group">
+                <label class="form-label">Base URL</label>
+                <input type="text" id="llm-base-url" class="form-input" placeholder="https://api.openai.com/v1" />
+                <div class="form-hint">支持 OpenAI / Claude / Gemini / 任意代理</div>
+              </div>
+              <div class="form-group">
+                <label class="form-label">API Key</label>
+                <input type="password" id="llm-api-key" class="form-input" placeholder="sk-..." />
+              </div>
+              <div class="form-group">
+                <label class="form-label">Model</label>
+                <input type="text" id="llm-model" class="form-input" placeholder="gpt-4o" />
+              </div>
+            </div>
+          </div>
+
+          <!-- Jimeng CLI Settings -->
+          <div class="settings-card glass-card">
+            <div class="settings-card-header">
+              <span class="settings-card-icon">🖼️</span>
+              <div>
+                <div class="settings-card-title">即梦 CLI 配置</div>
+                <div class="settings-card-sub">dreamina 命令行工具设置</div>
+              </div>
+              <button class="test-btn" id="test-cli-btn">检测 CLI</button>
+            </div>
+
+            <div class="form-grid">
+              <div class="form-group">
+                <label class="form-label">CLI 路径</label>
+                <input type="text" id="jimeng-cli-path" class="form-input" placeholder="/Users/你的用户名/.local/bin/dreamina" />
+                <div class="form-hint">填写完整绝对路径，例如：<code style="color:var(--green)">/Users/huihui/.local/bin/dreamina</code></div>
+              </div>
+
+              <div class="install-hint glass-card" id="install-hint" style="display:none">
+                <div class="install-hint-title">⚠️ 未检测到 dreamina CLI</div>
+                <div class="install-hint-body">运行以下命令安装：</div>
+                <div class="install-code">curl -s https://jimeng.jianying.com/cli | bash</div>
+                <div class="install-hint-body">安装后重新启动应用，或刷新检测。</div>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">图片分辨率类型</label>
+                <select id="image-resolution" class="form-input">
+                  <option value="2k">2K（推荐，适用于 4.0+ 模型）</option>
+                  <option value="4k">4K（适用于 4.0+ 模型）</option>
+                  <option value="1k">1K（适用于 3.0/3.1 模型）</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label class="form-label">图片比例</label>
+                <select id="image-ratio" class="form-input">
+                  <option value="16:9">16:9 横屏</option>
+                  <option value="9:16">9:16 竖屏</option>
+                  <option value="1:1">1:1 正方</option>
+                  <option value="4:3">4:3</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <!-- Video Settings -->
+          <div class="settings-card glass-card">
+            <div class="settings-card-header">
+              <span class="settings-card-icon">🎥</span>
+              <div>
+                <div class="settings-card-title">视频生成配置</div>
+                <div class="settings-card-sub">即梦视频生成参数</div>
+              </div>
+            </div>
+
+            <div class="form-grid">
+              <div class="form-group">
+                <label class="form-label">视频模型</label>
+                <select id="video-model" class="form-input">
+                  <option value="seedance2.0_vip">Seedance 2.0 VIP（1080p，最高质量）</option>
+                  <option value="seedance2.0">Seedance 2.0（720p）</option>
+                  <option value="seedance2.0fast">Seedance 2.0 Fast（快速）</option>
+                  <option value="seedance2.0fast_vip">Seedance 2.0 Fast VIP</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label class="form-label">视频时长（秒）</label>
+                <input type="number" id="video-duration" class="form-input" min="3" max="15" value="5" />
+              </div>
+              <div class="form-group">
+                <label class="form-label">视频分辨率</label>
+                <select id="video-resolution" class="form-input">
+                  <option value="1080p">1080p（仅 VIP 模型）</option>
+                  <option value="720p">720p</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <div class="settings-actions">
+            <button class="save-btn" id="save-settings-btn">
+              <span>💾</span> 保存设置
+            </button>
+            <div class="save-status" id="save-status"></div>
+          </div>
+
+        </div>
+      </div>
+
+    </main>
+  </div>
+
+  <!-- ── Login Modal ── -->
+  <div class="modal-overlay" id="login-modal" style="display:none">
+    <div class="modal-card glass-card">
+      <div class="modal-header">
+        <div class="modal-title">🔑 登录即梦账号</div>
+        <button class="modal-close" id="login-modal-close">×</button>
+      </div>
+      <div class="modal-body">
+        <div id="login-step-init">
+          <p class="modal-desc">即梦 CLI 需要登录才能生成内容。点击下方开始登录流程。</p>
+          <button class="start-btn" id="do-login-btn" style="width:100%;margin-top:12px">
+            <span>开始登录授权</span>
+          </button>
+        </div>
+
+        <div id="login-step-code" style="display:none">
+          <p class="modal-desc">正在打开浏览器进行授权，请在浏览器页面输入以下授权码：</p>
+          <div class="auth-code-box">
+            <div class="auth-code" id="auth-user-code">––––</div>
+            <div class="auth-uri" id="auth-uri"></div>
+          </div>
+          <div class="login-polling" id="login-polling">
+            <div class="scene-spinner" style="margin:0 auto 8px"></div>
+            <div>等待浏览器授权中...（2分钟内有效）</div>
+          </div>
+        </div>
+
+        <div id="login-step-done" style="display:none">
+          <div class="login-success">✅ 登录成功！即梦 CLI 已就绪。</div>
+        </div>
+
+        <div id="login-step-error" style="display:none">
+          <div class="login-error" id="login-error-msg">登录失败</div>
+          <button class="outline-btn" id="login-retry-btn" style="margin-top:12px">重试</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Account Manager Modal ── -->
+  <div class="modal-overlay" id="account-manager-modal" style="display:none">
+    <div class="modal-card glass-card account-manager-card" style="max-width:700px">
+      <div class="modal-header">
+        <div class="modal-title">👥 即梦多账号管理 (Local Router)</div>
+        <button class="modal-close" id="account-manager-close">×</button>
+      </div>
+      <div class="modal-body">
+        <p class="modal-desc" style="margin-bottom:15px">每个登录的账号会保存独立的本地 Session。支持一键快速切换和查询积分。</p>
+        
+        <div class="accounts-list-container">
+          <table class="accounts-table">
+            <thead>
+              <tr>
+                <th>状态</th>
+                <th>账户名称</th>
+                <th>积分余额</th>
+                <th>VIP级别</th>
+                <th>操作</th>
+              </tr>
+            </thead>
+            <tbody id="accounts-table-body">
+              <!-- Dynamically populated accounts rows -->
+            </tbody>
+          </table>
+        </div>
+        <div style="display:flex;gap:10px;margin-top:12px;justify-content:flex-end">
+          <button class="outline-btn" id="refresh-all-accounts-btn">刷新全部积分</button>
+          <button class="outline-btn" id="auto-select-account-btn">自动选择可用账号</button>
+        </div>
+
+        <!-- Add account section -->
+        <div class="add-account-section" style="margin-top:20px;padding-top:15px;border-top:1px solid var(--border)">
+          <h3 style="font-size:14px;color:var(--text-primary)">➕ 添加/登录新账号</h3>
+          <div style="display:flex;gap:10px;margin-top:8px">
+            <input type="text" id="new-account-name-input" placeholder="输入账户备注名称 (例如: 账号B)" style="flex:1;background:rgba(0,0,0,0.3);border:1px solid var(--border);border-radius:var(--radius-md);color:#fff;padding:8px 12px;font-size:13px" />
+            <button class="start-btn" id="add-account-btn" style="margin:0;padding:8px 16px">🔑 扫码/授权登录</button>
+          </div>
+        </div>
+        
+        <!-- Login status/polling for adding new account -->
+        <div id="router-login-polling-box" class="router-login-polling-box" style="display:none;margin-top:15px;padding:15px;background:rgba(0,0,0,0.2);border-radius:var(--radius-md);border:1px solid var(--border)">
+          <div class="auth-code-box" style="margin:0;background:none;border:none;padding:0">
+            <p class="modal-desc" style="margin-bottom:8px">正在请求即梦 CLI 登录，请在打开的浏览器页面输入此验证码：</p>
+            <div class="auth-code" id="router-auth-user-code" style="color:var(--accent-bright);font-size:32px;font-weight:bold;text-align:center;letter-spacing:4px;margin:12px 0">––––</div>
+            <div class="auth-uri" id="router-auth-uri" style="text-align:center;word-break:break-all;font-size:11px;color:var(--text-muted)"></div>
+          </div>
+          <div class="login-polling" style="text-align:center;margin-top:12px">
+            <div class="scene-spinner" style="margin:0 auto 8px"></div>
+            <div id="router-polling-status-text" style="font-size:12px;color:var(--text-secondary)">等待浏览器授权中...（120秒有效）</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="./main.js"></script>
+  <script type="module" src="./editor.js"></script>
+</body>
+</html>

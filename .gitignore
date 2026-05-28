@@ -1,0 +1,48 @@
+# Dependencies
+node_modules/
+
+# Build outputs
+dist/
+dist-electron/
+package_build/
+out/
+release/
+releases/
+
+# Packaged installers and archives
+*.dmg
+*.exe
+*.AppImage
+*.deb
+*.rpm
+*.zip
+*.7z
+*.tar.gz
+*.blockmap
+
+# Local runtime data and credentials
+.env
+.env.*
+!.env.example
+settings.json
+accounts.json
+.dreamina_cli/
+.jimeng-accounts/
+*.keychain-db
+
+# OS/editor noise
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Logs and temporary files
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+tmp/
+temp/
