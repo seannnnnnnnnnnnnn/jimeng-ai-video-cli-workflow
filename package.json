@@ -31,6 +31,19 @@
   "build": {
     "appId": "com.jimeng.ai-video-cli-workflow",
     "productName": "即梦AI视频CLI工作流",
+    "files": [
+      "dist/**/*",
+      "electron/**/*",
+      "package.json",
+      "!**/.DS_Store",
+      "!dist-electron{,/**/*}",
+      "!dist-electron-mac-slim{,/**/*}",
+      "!package_build{,/**/*}",
+      "!*.dmg",
+      "!*.exe",
+      "!*.blockmap",
+      "!*.zip"
+    ],
     "directories": {
       "output": "dist-electron"
     },

@@ -4,6 +4,7 @@ node_modules/
 # Build outputs
 dist/
 dist-electron/
+dist-electron-mac-slim/
 package_build/
 out/
 release/

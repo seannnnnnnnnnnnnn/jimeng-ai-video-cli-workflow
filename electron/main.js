@@ -12,7 +12,7 @@ const { exportVideo, FFMPEG_BIN } = require('./editor-exporter')
 const AccountRouter = require('./account-router')
 
 let mainWindow = null
-const isDev = process.env.NODE_ENV !== 'production'
+const isDev = !app.isPackaged
 
 function createWindow() {
   mainWindow = new BrowserWindow({
