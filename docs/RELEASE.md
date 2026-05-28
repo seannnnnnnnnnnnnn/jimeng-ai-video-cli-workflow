@@ -1,8 +1,8 @@
 # Release Guide
 
-## What Goes Into Git
+## Repository Scope
 
-Commit:
+The repository contains source code, documentation, package metadata, and release notes:
 
 - `src/`
 - `electron/`
@@ -15,28 +15,27 @@ Commit:
 - `.gitignore`
 - `SECURITY.md`
 
-Do not commit:
+Generated files and private runtime state stay outside git:
 
 - `node_modules/`
 - `dist/`
 - `dist-electron/`
 - `package_build/`
 - `.exe`, `.dmg`, `.blockmap`, `.zip`
-- API keys or account state
+- API keys, account state, local keychains, or generated media
 
 ## Release Assets
 
-Installer files should be uploaded to GitHub Releases, not committed to the repository.
+Installer files are distributed through GitHub Releases instead of the git history.
 
-Current local artifacts found during project cleanup:
+Public release asset names:
 
 ```text
-dist-electron/即梦工作流 Studio-1.0.0-arm64.dmg
-即梦工作流 Studio Setup 1.0.0.exe
-package_build/dist-electron/即梦工作流 Studio 1.0.0.exe
+即梦AI视频CLI工作流-1.0.0-arm64.dmg
+即梦AI视频CLI工作流-Setup-1.0.0.exe
 ```
 
-For a public release, prefer rebuilding after final smoke testing so filenames match the product name:
+Release assets should match the public product name and version:
 
 ```text
 即梦AI视频CLI工作流-1.0.0-arm64.dmg
@@ -52,11 +51,11 @@ For a public release, prefer rebuilding after final smoke testing so filenames m
 - [ ] Regenerate one image from edited prompt.
 - [ ] Continue to video generation for one short project.
 - [ ] Import result into editor and export a short MP4.
-- [ ] Confirm no API keys, local accounts, generated media, or installers are staged.
+- [ ] Confirm no API keys, local accounts, generated media, or installers are staged in git.
 - [ ] Build macOS and Windows installers.
 - [ ] Upload installers to GitHub Releases.
 
-## Suggested Release Copy
+## Release Copy
 
 ### Short
 
@@ -66,7 +65,7 @@ For a public release, prefer rebuilding after final smoke testing so filenames m
 
 这是一个面向 AI 短剧、漫剧和分镜视频创作者的桌面工作流工具。它把故事创意拆成镜头级分镜，用即梦 CLI 批量生成图片和视频，并在视频消耗积分前提供图片审核与二次提示词调整。内置本地多账号 CLI Router，可在多个即梦账号之间切换并自动选择有积分账号。
 
-## Known Notes
+## Public Notes
 
 - This is an unofficial workflow tool.
 - Users must install and log in to the official `dreamina` CLI.

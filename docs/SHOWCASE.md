@@ -1,4 +1,4 @@
-# Showcase Copy
+# Product Showcase
 
 ## Product Name
 
@@ -8,18 +8,18 @@ English: Jimeng AI Video CLI Workflow
 
 ## Taglines
 
-- 把即梦 CLI 变成桌面端 AI 视频生产线。
-- 从一个故事想法，到可剪辑的视频分镜。
-- 先审图，再生视频，少浪费积分。
-- 多账号积分调度，让 AI 视频生产不中断。
+- 把即梦 CLI 变成桌面端 AI 视频生产线
+- 从故事想法到可剪辑分镜，一站式推进
+- 先审图，再生视频，让每一次积分消耗更可控
+- 多账号积分调度，让 AI 视频生产保持连续
 
-## One-liner
+## One-Liner
 
 面向 AI 短剧和分镜视频创作者的桌面工作流工具：LLM 分镜、即梦 CLI 生图/图生视频、图片审核重生成、多账号积分调度、轻量剪辑导出。
 
 ## Value Proposition
 
-传统 CLI 适合开发者，但不适合持续生产视频内容。`即梦AI视频CLI工作流` 把命令行能力包装成可视化生产台，让创作者可以在一个应用里管理故事、分镜、图片、视频、账号积分和初剪导出。
+即梦 CLI 提供了强大的本地生成能力，但连续内容生产需要更完整的项目管理、素材审核和账号调度体验。`即梦AI视频CLI工作流` 把命令行能力包装成桌面生产台，让创作者可以在一个应用里管理故事、分镜、图片、视频、账号积分和初剪导出。
 
 ## Feature Bullets
 
@@ -34,9 +34,9 @@ English: Jimeng AI Video CLI Workflow
 
 ## GitHub About
 
-Desktop workflow for Dreamina/Jimeng CLI: LLM storyboard, image review, image-to-video generation, multi-account credit routing, and lightweight editing.
+The AI video production desk for Jimeng/Dreamina CLI: storyboarding, image review, image-to-video, multi-account credits, and quick editing.
 
-## Demo Script
+## Product Walkthrough
 
 1. 打开应用，展示设置页：LLM API 与 dreamina CLI 路径。
 2. 进入账号管理：展示默认账号积分，添加/切换账号，自动选择可用账号。
@@ -48,7 +48,7 @@ Desktop workflow for Dreamina/Jimeng CLI: LLM storyboard, image review, image-to
 8. 进入项目库和导演模式，展示单镜头重生成。
 9. 导入剪辑器，排列时间线并导出 MP4。
 
-## Screenshot Checklist
+## Interface Modules
 
 - `workflow.png`: 工作流首页和故事输入
 - `image-review.png`: 图片审核与提示词编辑
